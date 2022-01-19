@@ -7,10 +7,6 @@ this project is not yet complete,
 for all ready parts see documentation below.
 (docs are not complete, feel free to improve them)
 
-## Realease notes
-- fixed issues fixed on github repo in npm package - starting from version 1.2.0
-- **IOS support was added in version 2.0.0**
-- merged PR to fix write charicaristics - version 2.0.1
     
 ### Still missing
 
@@ -23,11 +19,9 @@ right now this package does not support IOS, so any one that wants to help and c
 ## Installation
 
 ```bash
-npm install react-native-ble-peripheral --save
-or 
-yarn add react-native-ble-peripheral
+npm install github:heroims/react-native-ble-peripheral --save
+
 ```
-npm page - https://www.npmjs.com/package/react-native-ble-peripheral
 ## Add permissions
 * In `AndroidManifest.xml` add:
 ```xml
