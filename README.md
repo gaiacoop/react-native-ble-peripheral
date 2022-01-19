@@ -73,7 +73,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-* In iOS/Info.plist // ↓ Add this
+* In `iOS/Info.plist`  ↓ Add this
 ```
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string></string>
