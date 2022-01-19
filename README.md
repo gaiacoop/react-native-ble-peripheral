@@ -12,9 +12,6 @@ for all ready parts see documentation below.
 
 if you would like to contribute to this project or suggest more future features you're welcome to so via an issue or pull request.
 
-### IOS support
-right now this package does not support IOS, so any one that wants to help and contribute the IOS support is more than welcome
-
 
 ## Installation
 
@@ -76,6 +73,11 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
+* In iOS/Info.plist // ↓ Add this
+```
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string></string>
+```
 
 ## Usage
 
