@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/heroims/react-native-ble-peripheral.git", :tag => "master" }
   s.source_files  = "ios/**/*.{h,m}"
 
-  s.dependency 'React'
+  s.dependency 'React-Core'
 end
