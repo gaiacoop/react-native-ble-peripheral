@@ -95,9 +95,9 @@ BLEPeripheral.addService(UUID:string, primary:boolean)
 BLEPeripheral.addService('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', true) //for primary service
 BLEPeripheral.addService('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', false) //for non primary service
 ```
-#### Add Characteristic
+#### Add Characteristic（Must after add service）
 BLEPeripheral.addCharacteristicToService(ServiceUUID:string, UUID:string, permissions:number, properties:number)
-
+### Android
 https://developer.android.com/reference/android/bluetooth/BluetoothGattCharacteristic.html
 the link above is for permissions and properties constants info
 
@@ -120,6 +120,25 @@ Properties:
 * 32 - Supports indication
 * 64 - Signed Write
 * 128 - Extended properties
+
+### iOS
+Permissions:
+* 0x01 - Readable
+* 0x02 - Writeable
+* 0x04 - Read Encryption
+* 0x08 - Write Encryption
+
+Properties:
+* 0x01 - Broadcastable
+* 0x02 - Readable
+* 0x04 - Writable without response
+* 0x08 - Writable
+* 0x10 - Supports notification
+* 0x20 - Supports indication
+* 0x40 - Signed Write
+* 0x80 - Extended properties
+* 0x100 - Notify Encryption(AVAILABLE(10_9, 6_0))
+* 0x200 - Indicate Encryption(AVAILABLE(10_9, 6_0))
 
 ```javascript
 BLEPeripheral.addCharacteristicToService('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 'XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX', 16 | 1, 8) //this is a Characteristic with read and write permissions and notify property
