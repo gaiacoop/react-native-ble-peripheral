@@ -1,5 +1,3 @@
-//  Created by Eskel on 12/12/2018
-
 import Foundation
 import CoreBluetooth
 
@@ -33,11 +31,11 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     
     @objc(addService:primary:)
     func addService(_ uuid: String, primary: Bool) {
+
         let serviceUUID = CBUUID(string: uuid)
         let service = CBMutableService(type: serviceUUID, primary: primary)
         if(servicesMap.keys.contains(uuid) != true){
             servicesMap[uuid] = service
-            manager.add(service)
             print("added service \(uuid)")
         }
         else {
@@ -51,11 +49,23 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         let propertyValue = CBCharacteristicProperties(rawValue: properties)
         let permissionValue = CBAttributePermissions(rawValue: permissions)
         let characteristic = CBMutableCharacteristic( type: characteristicUUID, properties: propertyValue, value: nil, permissions: permissionValue)
+        if (servicesMap[serviceUUID]?.characteristics == nil){
+            servicesMap[serviceUUID]?.characteristics=[];
+        }
         servicesMap[serviceUUID]?.characteristics?.append(characteristic)
         print("added characteristic to service")
     }
     
     @objc func start(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        let timeOutSecond=6.0;
+        let beginTime = CACurrentMediaTime()
+        while(manager.state != CBManagerState.poweredOn){
+            let endTime = CACurrentMediaTime()
+            if (endTime-beginTime > timeOutSecond)
+            {
+                break;
+            }
+        }
         if (manager.state != .poweredOn) {
             alertJS("Bluetooth turned off")
             return;
@@ -64,6 +74,11 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         startPromiseResolve = resolve
         startPromiseReject = reject
 
+        for service in servicesMap.values {
+            manager.add(service)
+        }
+        
+        
         let advertisementData = [
             CBAdvertisementDataLocalNameKey: name,
             CBAdvertisementDataServiceUUIDsKey: getServiceUUIDArray()
