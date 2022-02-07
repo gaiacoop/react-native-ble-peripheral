@@ -25,6 +25,8 @@ npm install github:heroims/react-native-ble-peripheral --save
 
  <uses-permission android:name="android.permission.BLUETOOTH"/>
  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+ <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+ <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 ```
 ## Project setup and initialization auto
 ```bash
