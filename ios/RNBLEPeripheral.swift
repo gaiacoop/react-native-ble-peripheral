@@ -92,14 +92,18 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         print("called stop")
     }
 
-    @objc(sendNotificationToDevices:characteristicUUID:data:)
-    func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, data: Data) {
+    @objc(sendNotificationToDevices:characteristicUUID:messageBytes:)
+    func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, messageBytes: [UInt8]) {
         if(servicesMap.keys.contains(serviceUUID) == true){
             let service = servicesMap[serviceUUID]!
             let characteristic = getCharacteristicForService(service, characteristicUUID)
-            if (characteristic == nil) { alertJS("service \(serviceUUID) does NOT have characteristic \(characteristicUUID)") }
+            if (characteristic == nil) {
+                alertJS("service \(serviceUUID) does NOT have characteristic \(characteristicUUID)")
+                return;
+            }
 
             let char = characteristic as! CBMutableCharacteristic
+            let data = Data(bytes: messageBytes, count: messageBytes.count)
             char.value = data
             let success = manager.updateValue( data, for: char, onSubscribedCentrals: nil)
             if (success){
@@ -211,14 +215,14 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
 
     func getCharacteristicForService(_ service: CBMutableService, _ characteristicUUID: String) -> CBCharacteristic? {
         for characteristic in service.characteristics ?? [] {
-            if (characteristic.uuid.isEqual(characteristicUUID) ) {
-                print("service \(service.uuid) does have characteristic \(characteristicUUID)")
+            if (characteristic.uuid.uuidString.uppercased() == characteristicUUID.uppercased() ) {
+                print("service \(service.uuid.uuidString) does have characteristic \(characteristicUUID)")
                 if (characteristic is CBMutableCharacteristic) {
                     return characteristic
                 }
                 print("but it is not mutable")
             } else {
-                alertJS("characteristic you are trying to access doesn't match")
+                alertJS("characteristic \(characteristic.uuid.uuidString) you are trying to access doesn't match")
             }
         }
         return nil

@@ -4,12 +4,9 @@
 
 @interface RCT_EXTERN_MODULE(BLEPeripheral, RCTEventEmitter)
 
-// Best explanation: https://medium.com/@andrei.pfeiffer/react-natives-rct-extern-method-c61c17bf17b2
-
 RCT_EXTERN_METHOD(
-    isAdvertising:
-    (RCTPromiseResolveBlock)resolve
-    rejecter: (RCTPromiseRejectBlock)reject
+    isAdvertising:  (RCTPromiseResolveBlock)resolve
+    rejecter:       (RCTPromiseRejectBlock)reject
 )
 RCT_EXTERN_METHOD(
     setName: (NSString *)string
@@ -25,14 +22,14 @@ RCT_EXTERN_METHOD(
     properties:                 (NSInteger *)properties
 )
 RCT_EXTERN_METHOD(
-    start:
-    (RCTPromiseResolveBlock)resolve
+    start:      (RCTPromiseResolveBlock)resolve
     rejecter:   (RCTPromiseRejectBlock)reject
 )
 RCT_EXTERN_METHOD(stop)
 RCT_EXTERN_METHOD(
-    sendNotificationToDevices: (NSString *)characteristicUUID
-    data: (NSString *)data
+    sendNotificationToDevices:  (NSString *)serviceUUID
+    characteristicUUID:         (NSString *)characteristicUUID
+    messageBytes:               (NSArray *)messageBytes
 )
 RCT_EXTERN_METHOD(requiresMainQueueSetup)
 

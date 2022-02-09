@@ -202,10 +202,10 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
         advertising = false;
     }
     @ReactMethod
-    public void sendNotificationToDevices(String serviceUUID,String charUUID,ReadableArray message) {
-        byte[] decoded = new byte[message.size()];
-        for (int i = 0; i < message.size(); i++) {
-            decoded[i] = new Integer(message.getInt(i)).byteValue();
+    public void sendNotificationToDevices(String serviceUUID,String charUUID,ReadableArray messageBytes) {
+        byte[] decoded = new byte[messageBytes.size()];
+        for (int i = 0; i < messageBytes.size(); i++) {
+            decoded[i] = new Integer(messageBytes.getInt(i)).byteValue();
         }
         BluetoothGattCharacteristic characteristic = servicesMap.get(serviceUUID).getCharacteristic(UUID.fromString(charUUID));
         characteristic.setValue(decoded);
