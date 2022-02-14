@@ -10,7 +10,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     var manager: CBPeripheralManager!
     var startPromiseResolve: RCTPromiseResolveBlock?
     var startPromiseReject: RCTPromiseRejectBlock?
-    
+
     override init() {
         super.init()
         manager = CBPeripheralManager(delegate: self, queue: nil, options: nil)
@@ -54,6 +54,11 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         }
         servicesMap[serviceUUID]?.characteristics?.append(characteristic)
         print("added characteristic to service")
+    }
+    
+    @objc(addDescriptorToCharacteristic:charactUUID:uuid:permissions:)
+    func addDescriptorToCharacteristic(_ serviceUUID: String, charactUUID:String, uuid: String, permissions: UInt) {
+        alertJS("iOS not need")
     }
     
     @objc func start(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
@@ -116,43 +121,79 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
             alertJS("service \(serviceUUID) does not exist")
         }
     }
-    
+        
     //// EVENTS
 
     // Respond to Read request
-    func peripheralManager(peripheral: CBPeripheralManager, didReceiveReadRequest request: CBATTRequest)
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) 
     {
         let characteristic = getCharacteristic(request.characteristic.uuid)
         if (characteristic != nil){
+            print("didReceiveReadRequest")
             request.value = characteristic?.value
             manager.respond(to: request, withResult: .success)
         } else {
             alertJS("cannot read, characteristic not found")
         }
     }
+    
 
     // Respond to Write request
-    func peripheralManager(peripheral: CBPeripheralManager, didReceiveWriteRequests requests: [CBATTRequest])
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveWrite requests: [CBATTRequest])
     {
+        
+        var err = "";
+        
+        if(requests.count<1)
+        {
+            err="No Receive."
+            sendEvent(withName: "didReceiveWrite", body: [err,{}])
+
+            return ;
+        }
+
         for request in requests
         {
+            var characteristicMap = Dictionary<String,Any>();
+            characteristicMap["uuid"] = request.characteristic.uuid.uuidString;
+            
+            var dataArray=[UInt8]();
+            if(request.characteristic.value==nil||request.characteristic.value!.count<1){
+                err="No characteristic."
+            }
+            else{
+                err=""
+                dataArray=[UInt8](request.characteristic.value!);
+            }
+            characteristicMap["value"] = dataArray;
+            characteristicMap["service_uuid"] = request.characteristic.service?.uuid.uuidString;
+
+            sendEvent(withName: "didReceiveWrite", body: [err,characteristicMap])
+
             let characteristic = getCharacteristic(request.characteristic.uuid)
             if (characteristic == nil) { alertJS("characteristic for writing not found") }
             if request.characteristic.uuid.isEqual(characteristic?.uuid)
             {
+                print("didReceiveReadRequest")
                 let char = characteristic as! CBMutableCharacteristic
                 char.value = request.value
             } else {
                 alertJS("characteristic you are trying to access doesn't match")
             }
+            
+            manager.respond(to: request, withResult: .success)
         }
-        manager.respond(to: requests[0], withResult: .success)
+        
     }
 
+    func peripheralManagerIsReady(toUpdateSubscribers peripheral: CBPeripheralManager) {
+        print("peripheralManagerIsReady");
+    }
+    
     // Respond to Subscription to Notification events
     func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
         let char = characteristic as! CBMutableCharacteristic
-        print("subscribed centrals: \(String(describing: char.subscribedCentrals))")
+        print("subscribed characteristic: \(String(describing: char))")
     }
 
     // Respond to Unsubscribe events
@@ -243,7 +284,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         }
     }
 
-    @objc override func supportedEvents() -> [String]! { return ["onWarning"] }
+    @objc override func supportedEvents() -> [String]! { return ["onWarning","didReceiveWrite"] }
     override func startObserving() { hasListeners = true }
     override func stopObserving() { hasListeners = false }
     @objc override static func requiresMainQueueSetup() -> Bool { return false }
@@ -260,6 +301,8 @@ extension CBManagerState: CustomStringConvertible {
         case .unauthorized: return ".unauthorized"
         case .unknown: return ".unknown"
         case .unsupported: return ".unsupported"
+        @unknown default:
+            return ".unknown"
         }
     }
 }

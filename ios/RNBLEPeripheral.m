@@ -22,6 +22,13 @@ RCT_EXTERN_METHOD(
     properties:                 (NSInteger *)properties
 )
 RCT_EXTERN_METHOD(
+    addDescriptorToCharacteristic:  (NSString *)serviceUUID
+    charactUUID:                    (NSString *)charactUUID
+    uuid:                           (NSString *)uuid
+    permissions:                    (NSInteger *)permissions
+)
+
+RCT_EXTERN_METHOD(
     start:      (RCTPromiseResolveBlock)resolve
     rejecter:   (RCTPromiseRejectBlock)reject
 )
