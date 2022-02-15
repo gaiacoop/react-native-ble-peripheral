@@ -175,6 +175,29 @@ In case of error, these are the error codes:
  BLEPeripheral.stop()
 ```
 
+#### NativeEventEmitter
+```javascript
+const BLEPeripheralManagerEmitter = new NativeEventEmitter(BLEPeripheral);
+
+BLEPeripheralManagerEmitter.addListener('onWarning',(warning) => {
+  console.log(warning)
+});
+
+BLEPeripheralManagerEmitter.addListener('didReceiveWrite',([err,characteristic])=>{
+  
+  if (err){
+    console.log(err);
+  }
+  else{
+    console.log('char uuid:'+characteristic.uuid);
+    console.log('char value:' + byteToString(characteristic.value));
+    var tmpReceiveStr=characteristic.value.toString();
+    console.log('char force value:' + tmpReceiveStr);
+  }
+})
+```
+
+
 #### Set name (optional)
 BLEPeripheral.setName(name:string)
 
