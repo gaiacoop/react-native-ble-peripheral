@@ -158,17 +158,22 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
             characteristicMap["uuid"] = request.characteristic.uuid.uuidString;
             
             var dataArray=[UInt8]();
+            var dataStr="";
             if(request.characteristic.value==nil||request.characteristic.value!.count<1){
                 err="No characteristic."
             }
             else{
                 err=""
-                dataArray=[UInt8](request.characteristic.value!);
+                dataArray = [UInt8](request.characteristic.value!);
+                dataStr = String(data: request.characteristic.value!, encoding: .utf8) ?? ""
             }
             characteristicMap["value"] = dataArray;
             characteristicMap["service_uuid"] = request.characteristic.service?.uuid.uuidString;
 
             sendEvent(withName: "didReceiveWrite", body: [err,characteristicMap])
+
+            characteristicMap["value"] = dataStr;
+            sendEvent(withName: "didReceiveWriteString", body: [err,characteristicMap])
 
             let characteristic = getCharacteristic(request.characteristic.uuid)
             if (characteristic == nil) { alertJS("characteristic for writing not found") }
@@ -284,7 +289,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         }
     }
 
-    @objc override func supportedEvents() -> [String]! { return ["onWarning","didReceiveWrite"] }
+    @objc override func supportedEvents() -> [String]! { return ["onWarning","didReceiveWrite","didReceiveWriteString"] }
     override func startObserving() { hasListeners = true }
     override func stopObserving() { hasListeners = false }
     @objc override static func requiresMainQueueSetup() -> Bool { return false }

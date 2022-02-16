@@ -17,6 +17,7 @@ import android.content.Context;
 import android.os.ParcelUuid;
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
@@ -145,25 +146,44 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
             super.onCharacteristicWriteRequest(device, requestId, characteristic, preparedWrite,
                     responseNeeded, offset, value);
             characteristic.setValue(value);
-            WritableMap map = Arguments.createMap();
+            WritableMap map1 = Arguments.createMap();
+            map1.putString("uuid", characteristic.getUuid().toString());
+            map1.putString("service_uuid", characteristic.getService().getUuid().toString());
+            WritableMap map2 = map1.copy();
+
             WritableArray data = Arguments.createArray();
             for (byte b : value) {
                 data.pushInt((int) b);
             }
-            map.putArray("value", data);
-            map.putString("uuid", characteristic.getUuid().toString());
-            map.putString("service_uuid", characteristic.getService().getUuid().toString());
+            map1.putArray("value", data);
+
 
             if (responseNeeded) {
                 mGattServer.sendResponse(device, requestId, BluetoothGatt.GATT_SUCCESS, offset, value);
             }
-            WritableArray arguments = Arguments.createArray();
+            WritableArray arguments1 = Arguments.createArray();
             if (value.length<1){
                 err="No characteristic.";
             }
-            arguments.pushString(err);
-            arguments.pushMap(map);
-            sendEventToJs("didReceiveWrite",arguments);
+            arguments1.pushString(err);
+            arguments1.pushMap(map1);
+
+            sendEventToJs("didReceiveWrite",arguments1);
+
+            String tmpStr="";
+            try {
+                tmpStr=new String(value,"UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                err=e.getMessage();
+            }
+            map2.putString("value", tmpStr);
+            WritableArray arguments2 = Arguments.createArray();
+            arguments2.pushString(err);
+            arguments2.pushMap(map2);
+
+
+            sendEventToJs("didReceiveWriteString",arguments2);
+
         }
 
         @Override
