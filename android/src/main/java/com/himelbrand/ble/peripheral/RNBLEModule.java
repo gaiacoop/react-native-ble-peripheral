@@ -106,13 +106,21 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
 
     private final BluetoothGattServerCallback mGattServerCallback = new BluetoothGattServerCallback() {
         @Override
+        public void onMtuChanged(BluetoothDevice device, int mtu) {
+            super.onMtuChanged(device,mtu);
+        }
+
+
+        @Override
         public void onConnectionStateChange(BluetoothDevice device, final int status, int newState) {
             super.onConnectionStateChange(device, status, newState);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if (newState == BluetoothGatt.STATE_CONNECTED) {
                     mBluetoothDevices.add(device);
+                    sendEventToJs("subscribedCentral",device.getAddress());
                 } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
                     mBluetoothDevices.remove(device);
+                    sendEventToJs("unsubscribedCentral",device.getAddress());
                 }
             } else {
                 mBluetoothDevices.remove(device);

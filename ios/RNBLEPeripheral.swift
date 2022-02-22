@@ -198,12 +198,22 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     // Respond to Subscription to Notification events
     func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
         let char = characteristic as! CBMutableCharacteristic
-        print("subscribed characteristic: \(String(describing: char))")
+        let notifyInfo=NotifyInfo(characterist: characteristic, centrals: central)
+        notifyInfos[central.identifier.uuidString.uppercased()]=notifyInfo;
+        print("subscribed characteristic: \(String(describing: char)) maxUpdate:\(central.maximumUpdateValueLength)")
+        sendEvent(withName: "subscribedCentral", body:central.identifier.uuidString)
+
     }
 
     // Respond to Unsubscribe events
     func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didUnsubscribeFrom characteristic: CBCharacteristic) {
         let char = characteristic as! CBMutableCharacteristic
+        let tmpIndex=notifyInfos.index(forKey: central.identifier.uuidString.uppercased());
+        if tmpIndex != nil{
+            notifyInfos.remove(at: tmpIndex!)
+        }
+        sendEvent(withName: "unsubscribedCentral", body:central.identifier.uuidString)
+
         print("unsubscribed centrals: \(String(describing: char.subscribedCentrals))")
     }
 
@@ -289,7 +299,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         }
     }
 
-    @objc override func supportedEvents() -> [String]! { return ["onWarning","didReceiveWrite","didReceiveWriteString"] }
+    @objc override func supportedEvents() -> [String]! { return ["onWarning","didReceiveWrite","didReceiveWriteString","subscribedCentral","unsubscribedCentral"] }
     override func startObserving() { hasListeners = true }
     override func stopObserving() { hasListeners = false }
     @objc override static func requiresMainQueueSetup() -> Bool { return false }
