@@ -1,6 +1,17 @@
 import Foundation
 import CoreBluetooth
 
+struct SendingDataInfo {
+    var characterist: CBMutableCharacteristic
+    var data: Data
+    var centrals: [CBCentral]?
+}
+
+struct NotifyInfo {
+    var characterist: CBCharacteristic
+    var centrals: CBCentral
+}
+
 @objc(BLEPeripheral)
 class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     var advertising: Bool = false
@@ -10,6 +21,10 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     var manager: CBPeripheralManager!
     var startPromiseResolve: RCTPromiseResolveBlock?
     var startPromiseReject: RCTPromiseRejectBlock?
+
+    let lockQueue = DispatchQueue(label: "com.send.LockQueue")
+    var sendingDataInfos = [SendingDataInfo]()
+    var notifyInfos = Dictionary<String, NotifyInfo>()
 
     override init() {
         super.init()
@@ -110,22 +125,43 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
             let char = characteristic as! CBMutableCharacteristic
             let data = Data(bytes: messageBytes, count: messageBytes.count)
             char.value = data
-            let success = manager.updateValue( data, for: char, onSubscribedCentrals: nil)
-            if (success){
-                print("changed data for characteristic \(characteristicUUID)")
-            } else {
-                alertJS("failed to send changed data for characteristic \(characteristicUUID)")
+            
+            lockQueue.sync() {
+                let temp = SendingDataInfo(characterist: char, data: data, centrals:nil)
+                sendingDataInfos.append(temp)
             }
+            
+            processCharacteristicsUpdateQueue()
 
         } else {
             alertJS("service \(serviceUUID) does not exist")
         }
     }
+    
+    func updateCharacteristic(_ characteristicData: SendingDataInfo) -> Bool {
+        return manager.updateValue(characteristicData.data, for: characteristicData.characterist, onSubscribedCentrals: characteristicData.centrals)
+    }
+
+    func processCharacteristicsUpdateQueue() {
+        guard let characteristicData = sendingDataInfos.first else {
+            return
+        }
+        while updateCharacteristic(characteristicData) {
+            lockQueue.sync() {
+                _ = sendingDataInfos.remove(at: 0)
+                if sendingDataInfos.first == nil {
+                    alertJS("send finish")
+                    return
+                }
+            }
+        }
+    }
+
         
     //// EVENTS
 
     // Respond to Read request
-    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) 
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest)
     {
         let characteristic = getCharacteristic(request.characteristic.uuid)
         if (characteristic != nil){
@@ -193,6 +229,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
 
     func peripheralManagerIsReady(toUpdateSubscribers peripheral: CBPeripheralManager) {
         print("peripheralManagerIsReady");
+        processCharacteristicsUpdateQueue()
     }
     
     // Respond to Subscription to Notification events
