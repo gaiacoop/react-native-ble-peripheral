@@ -33,11 +33,14 @@ RCT_EXTERN_METHOD(
     rejecter:   (RCTPromiseRejectBlock)reject
 )
 RCT_EXTERN_METHOD(stop)
+
 RCT_EXTERN_METHOD(
     sendNotificationToDevices:  (NSString *)serviceUUID
     characteristicUUID:         (NSString *)characteristicUUID
     messageBytes:               (NSArray *)messageBytes
+    deviceIDs:                  (NSArray *)deviceIDs
 )
+
 RCT_EXTERN_METHOD(requiresMainQueueSetup)
 
 @end

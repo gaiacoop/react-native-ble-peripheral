@@ -15,7 +15,8 @@ declare module "react-native-ble-peripheral" {
   function sendNotificationToDevices(
     ServiceUUID: string,
     CharacteristicUUID: string,
-    messageBytes: number[]
+    messageBytes: number[],
+    deviceIDs:string[]
   ): void;
   function start(): Promise<boolean>;
   function stop(): void;

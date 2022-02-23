@@ -9,7 +9,7 @@ struct SendingDataInfo {
 
 struct NotifyInfo {
     var characterist: CBCharacteristic
-    var centrals: CBCentral
+    var central: CBCentral
 }
 
 @objc(BLEPeripheral)
@@ -112,8 +112,8 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         print("called stop")
     }
 
-    @objc(sendNotificationToDevices:characteristicUUID:messageBytes:)
-    func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, messageBytes: [UInt8]) {
+    @objc(sendNotificationToDevices:characteristicUUID:messageBytes:deviceIDs:)
+    func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, messageBytes: [UInt8],deviceIDs :[String]) {
         if(servicesMap.keys.contains(serviceUUID) == true){
             let service = servicesMap[serviceUUID]!
             let characteristic = getCharacteristicForService(service, characteristicUUID)
@@ -125,9 +125,19 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
             let char = characteristic as! CBMutableCharacteristic
             let data = Data(bytes: messageBytes, count: messageBytes.count)
             char.value = data
+            var centrals = Array<CBCentral>();
+            if(deviceIDs.count > 0){
+                for deviceID in deviceIDs {
+                    let tmpCentral = notifyInfos[deviceID];
+                    if tmpCentral != nil{
+                        centrals.append(tmpCentral!.central);
+                    }
+                }
+            }
+
             
             lockQueue.sync() {
-                let temp = SendingDataInfo(characterist: char, data: data, centrals:nil)
+                let temp = SendingDataInfo(characterist: char, data: data, centrals:centrals.count > 0 ? centrals : nil)
                 sendingDataInfos.append(temp)
             }
             
@@ -161,7 +171,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     //// EVENTS
 
     // Respond to Read request
-    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest)
+    func peripheralManager(_ peripheral: CBPeripheralManager, didReceiveRead request: CBATTRequest) 
     {
         let characteristic = getCharacteristic(request.characteristic.uuid)
         if (characteristic != nil){
@@ -235,7 +245,7 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     // Respond to Subscription to Notification events
     func peripheralManager(_ peripheral: CBPeripheralManager, central: CBCentral, didSubscribeTo characteristic: CBCharacteristic) {
         let char = characteristic as! CBMutableCharacteristic
-        let notifyInfo=NotifyInfo(characterist: characteristic, centrals: central)
+        let notifyInfo=NotifyInfo(characterist: characteristic, central: central)
         notifyInfos[central.identifier.uuidString.uppercased()]=notifyInfo;
         print("subscribed characteristic: \(String(describing: char)) maxUpdate:\(central.maximumUpdateValueLength)")
         sendEvent(withName: "subscribedCentral", body:central.identifier.uuidString)

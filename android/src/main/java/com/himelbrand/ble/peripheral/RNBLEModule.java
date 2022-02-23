@@ -280,7 +280,7 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
         advertising = false;
     }
     @ReactMethod
-    public void sendNotificationToDevices(String serviceUUID,String charUUID,ReadableArray messageBytes) {
+    public void sendNotificationToDevices(String serviceUUID,String charUUID,ReadableArray messageBytes,ReadableArray deviceIDs) {
         byte[] decoded = new byte[messageBytes.size()];
         for (int i = 0; i < messageBytes.size(); i++) {
             decoded[i] = new Integer(messageBytes.getInt(i)).byteValue();
@@ -291,8 +291,17 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
                 & BluetoothGattCharacteristic.PROPERTY_INDICATE)
                 == BluetoothGattCharacteristic.PROPERTY_INDICATE;
         for (BluetoothDevice device : mBluetoothDevices) {
-            // true for indication (acknowledge) and false for notification (un-acknowledge).
-            mGattServer.notifyCharacteristicChanged(device, characteristic, indicate);
+            if (deviceIDs.size()>0){
+                for (int i = 0; i < deviceIDs.size(); i++) {
+                    if (device.getAddress()==deviceIDs.getString(i)){
+                        mGattServer.notifyCharacteristicChanged(device, characteristic, indicate);
+                        break;
+                    }
+                }
+            }
+            else {
+                mGattServer.notifyCharacteristicChanged(device, characteristic, indicate);
+            }
         }
     }
 
