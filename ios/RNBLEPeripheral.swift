@@ -205,13 +205,13 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
             
             var dataArray=[UInt8]();
             var dataStr="";
-            if(request.characteristic.value==nil||request.characteristic.value!.count<1){
+            if(request.value==nil||request.value!.count<1){
                 err="No characteristic."
             }
             else{
                 err=""
-                dataArray = [UInt8](request.characteristic.value!);
-                dataStr = String(data: request.characteristic.value!, encoding: .utf8) ?? ""
+                dataArray = [UInt8](request.value!);
+                dataStr = String(data: request.value!, encoding: .utf8) ?? ""
             }
             characteristicMap["value"] = dataArray;
             characteristicMap["service_uuid"] = request.characteristic.service?.uuid.uuidString;
