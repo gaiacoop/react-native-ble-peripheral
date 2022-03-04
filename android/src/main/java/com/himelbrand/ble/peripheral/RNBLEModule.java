@@ -156,7 +156,8 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
             characteristic.setValue(value);
             WritableMap map1 = Arguments.createMap();
             map1.putString("uuid", characteristic.getUuid().toString());
-            map1.putString("service_uuid", characteristic.getService().getUuid().toString());
+            map1.putString("service", characteristic.getService().getUuid().toString());
+            map1.putString("central", device.getAddress());
             WritableMap map2 = map1.copy();
 
             WritableArray data = Arguments.createArray();

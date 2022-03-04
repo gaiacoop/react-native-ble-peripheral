@@ -214,7 +214,8 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
                 dataStr = String(data: request.value!, encoding: .utf8) ?? ""
             }
             characteristicMap["value"] = dataArray;
-            characteristicMap["service_uuid"] = request.characteristic.service?.uuid.uuidString;
+            characteristicMap["service"] = request.characteristic.service?.uuid.uuidString;
+            characteristicMap["central"] = request.central.identifier.uuidString;
 
             sendEvent(withName: "didReceiveWrite", body: [err,characteristicMap])
 
