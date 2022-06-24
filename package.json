@@ -17,7 +17,7 @@
     "peripheral",
     "react"
   ],
-  "author": "Omri Himelbrand",
+  "author": "heroims",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/himelbrand/react-native-ble-peripheral/issues"
