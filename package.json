@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/himelbrand/react-native-ble-peripheral.git"
+    "url": "git+https://github.com/heroims/react-native-ble-peripheral.git"
   },
   "keywords": [
     "react-native",
@@ -20,7 +20,7 @@
   "author": "heroims",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/himelbrand/react-native-ble-peripheral/issues"
+    "url": "https://github.com/heroims/react-native-ble-peripheral/issues"
   },
-  "homepage": "https://github.com/himelbrand/react-native-ble-peripheral#readme"
+  "homepage": "https://github.com/heroims/react-native-ble-peripheral#readme"
 }
