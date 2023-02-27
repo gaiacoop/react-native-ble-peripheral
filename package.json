@@ -1,5 +1,5 @@
 {
-  "name": "react-native-ble-peripheral",
+  "name": "@heroims/react-native-ble-peripheral",
   "version": "2.0.3",
   "description": "a simulator for a BLE peripheral, to help with testing BLE apps without an actual peripheral BLE device",
   "main": "index.js",
@@ -9,7 +9,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/heroims/react-native-ble-peripheral.git"
+    "url": "git+https://github.com/heroims/react-native-ble-peripheral.git",
+    "directory": "packages/name"
   },
   "keywords": [
     "react-native",
@@ -21,6 +22,9 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/heroims/react-native-ble-peripheral/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "homepage": "https://github.com/heroims/react-native-ble-peripheral#readme"
 }
