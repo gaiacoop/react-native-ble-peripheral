@@ -16,7 +16,7 @@ if you would like to contribute to this project or suggest more future features 
 ## Installation
 
 ```bash
-npm install @heroims/react-native-ble-peripheral --save
+npm install github:heroims/react-native-ble-peripheral --save
 
 ```
 ## Add permissions
