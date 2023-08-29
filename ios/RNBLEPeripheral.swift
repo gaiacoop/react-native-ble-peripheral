@@ -18,17 +18,24 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
     var hasListeners: Bool = false
     var name: String = "RN_BLE"
     var servicesMap = Dictionary<String, CBMutableService>()
-    var manager: CBPeripheralManager!
+    var _manager: CBPeripheralManager? = nil
     var startPromiseResolve: RCTPromiseResolveBlock?
     var startPromiseReject: RCTPromiseRejectBlock?
 
     let lockQueue = DispatchQueue(label: "com.send.LockQueue")
     var sendingDataInfos = [SendingDataInfo]()
     var notifyInfos = Dictionary<String, NotifyInfo>()
-
+    var manager: CBPeripheralManager {
+        get {
+            if(_manager == nil){
+                _manager = CBPeripheralManager(delegate: self, queue: nil, options: nil)
+            }
+            return _manager!
+        }
+    }
+    
     override init() {
         super.init()
-        manager = CBPeripheralManager(delegate: self, queue: nil, options: nil)
         print("BLEPeripheral initialized, advertising: \(advertising)")
     }
     

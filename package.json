@@ -1,6 +1,6 @@
 {
   "name": "@heroims/react-native-ble-peripheral",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "a simulator for a BLE peripheral, to help with testing BLE apps without an actual peripheral BLE device",
   "main": "index.js",
   "types": "index.d.ts",

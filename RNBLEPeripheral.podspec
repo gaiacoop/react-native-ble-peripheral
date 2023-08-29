@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 
   s.authors      = package['author']
   s.homepage     = package['homepage']
-  s.platform     = :ios, "7.0"
+  s.platform     = :ios, "7.1"
 
   s.source       = { :git => "https://github.com/heroims/react-native-ble-peripheral.git", :tag => "master" }
   s.source_files  = "ios/**/*.{h,m,swift}"
