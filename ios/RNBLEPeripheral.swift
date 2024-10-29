@@ -119,6 +119,10 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         print("called stop")
     }
 
+    @objc func stopAdvertising() {
+        stop()
+    }
+
     @objc(sendNotificationToDevices:characteristicUUID:messageBytes:deviceIDs:)
     func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, messageBytes: [UInt8],deviceIDs :[String]) {
         if(servicesMap.keys.contains(serviceUUID) == true){

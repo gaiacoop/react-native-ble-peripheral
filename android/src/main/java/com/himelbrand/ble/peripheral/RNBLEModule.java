@@ -273,6 +273,11 @@ public class RNBLEModule extends ReactContextBaseJavaModule{
         if (mGattServer != null) {
             mGattServer.close();
         }
+        stopAdvertising();
+    }
+
+    @ReactMethod
+    public void stopAdvertising(){
         if (mBluetoothAdapter !=null && mBluetoothAdapter.isEnabled() && advertiser != null) {
             // If stopAdvertising() gets called before close() a null
             // pointer exception is raised.
