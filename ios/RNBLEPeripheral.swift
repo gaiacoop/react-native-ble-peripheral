@@ -123,6 +123,15 @@ class BLEPeripheral: RCTEventEmitter, CBPeripheralManagerDelegate {
         stop()
     }
 
+    @objc func resetServices() {
+        for (uuid, service) in servicesMap {
+            manager.remove(service)
+            print("removed service \(uuid)")
+        }
+        servicesMap.removeAll()
+        _manager = nil
+    }
+
     @objc(sendNotificationToDevices:characteristicUUID:messageBytes:deviceIDs:)
     func sendNotificationToDevices(_ serviceUUID: String, characteristicUUID: String, messageBytes: [UInt8],deviceIDs :[String]) {
         if(servicesMap.keys.contains(serviceUUID) == true){

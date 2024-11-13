@@ -32,7 +32,12 @@ RCT_EXTERN_METHOD(
     start:      (RCTPromiseResolveBlock)resolve
     rejecter:   (RCTPromiseRejectBlock)reject
 )
+
 RCT_EXTERN_METHOD(stop)
+
+RCT_EXTERN_METHOD(stopAdvertising)
+
+RCT_EXTERN_METHOD(resetServices)
 
 RCT_EXTERN_METHOD(
     sendNotificationToDevices:  (NSString *)serviceUUID
